@@ -8,6 +8,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 type CandleProps = ThreeElements["group"] & {
   isLit?: boolean;
+  onToggle?: () => void;
 };
 
 type FlameUniforms = {
@@ -82,7 +83,7 @@ const fragmentShader = `
   }
 `;
 
-export function Candle({ children, isLit = true, ...groupProps }: CandleProps) {
+export function Candle({ children, isLit = true, onToggle, ...groupProps }: CandleProps) {
   const gltf = useLoader(GLTFLoader, "/candle.glb");
   const candleScene = useMemo<Group | null>(() => gltf.scene?.clone(true) ?? null, [gltf.scene]);
   const lightRef = useRef<PointLight>(null);
@@ -163,7 +164,11 @@ export function Candle({ children, isLit = true, ...groupProps }: CandleProps) {
   }
 
   return (
-    <group {...groupProps}>
+    <group
+      {...groupProps}
+      onClick={onToggle}
+      onPointerDown={onToggle}
+    >
       <primitive object={candleScene} />
       <mesh ref={flameMeshRef} scale={0.4} position={[0, 2.9, 0]} material={flameMaterial}>
         <sphereGeometry args={[0.5, 32, 32]} />

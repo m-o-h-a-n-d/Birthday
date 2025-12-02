@@ -507,6 +507,33 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hasStarted, hasAnimationCompleted, isCandleLit, playBackgroundMusic]);
 
+  useEffect(() => {
+    const handleStart = () => {
+      if (!hasStarted) {
+        playBackgroundMusic();
+        setHasStarted(true);
+      }
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      handleStart();
+    };
+
+    const handleTouch = (event: TouchEvent) => {
+      event.preventDefault();
+      handleStart();
+    };
+
+    window.addEventListener("click", handleClick);
+    window.addEventListener("touchstart", handleTouch);
+
+    return () => {
+      window.removeEventListener("click", handleClick);
+      window.removeEventListener("touchstart", handleTouch);
+    };
+  }, [hasStarted, playBackgroundMusic]);
+
   const handleCardToggle = useCallback((id: string) => {
     setActiveCardId((current) => (current === id ? null : id));
   }, []);
