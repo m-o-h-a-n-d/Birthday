@@ -380,26 +380,21 @@ export default function App() {
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    const audio = new Audio("/music.mp3");
-    audio.loop = true;
-    audio.preload = "auto";
-    backgroundAudioRef.current = audio;
-    return () => {
-      audio.pause();
-      backgroundAudioRef.current = null;
-    };
-  }, []);
-
   const playBackgroundMusic = useCallback(() => {
-    const audio = backgroundAudioRef.current;
+    let audio = backgroundAudioRef.current;
     if (!audio) {
-      return;
+      audio = new Audio("/music.mp3");
+      audio.loop = true;
+      audio.preload = "auto";
+      audio.volume = 1;
+      audio.muted = false;
+      backgroundAudioRef.current = audio;
     }
     if (!audio.paused) {
       return;
     }
     audio.currentTime = 0;
+    audio.load(); // Ensure audio is loaded on mobile
     void audio.play().catch(() => {
       // ignore play errors (browser might block)
     });
